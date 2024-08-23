@@ -1,0 +1,103 @@
+{% extends 'oivReport/oiv_report_base.html.twig' %}
+
+{% block title %}ОиВ|пациенты{% endblock %}
+
+{% block body %}
+
+<div class="container-fluid">
+
+    <p class="h5 text-center">Детальный отчёт по разделу исследований - {{ groupName }}</p>
+    <p class="h5 text-center">Исполнитель: {{ user }}</p>
+
+    <section class="py-3">
+        <form class="d-flex justify-content-end" action="{{ baseUrl }}/oiv_report/patient/html" method="get">
+            <label class="align-middle mx-3">
+                <select name="blank">
+                    <option value="all" selected>Выберите исследование</option>
+                    <option value="all">Все исследования раздела</option>
+                    {% for blank in blankArray %}
+                        <option value="{{ blank['ID_ANAL'] }}">{{ blank['NAME'] }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="align-middle mx-3">
+                <select name="doctor">
+                    <option value="all" selected>Выберите исполнителя</option>
+                    <option value="all">Все исполнители</option>
+                    {% for doctor in doctorArray %}
+                        <option value="{{ doctor['ID_USER'] }}">{{ doctor['DOCTOR'] }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="align-middle">Период: с <input class="mx-1" name="from" type="date" value="{{ data['dateFrom'] }}"></label>
+            <label class="align-middle">по <input  name="to" type="date" value="{{ data['dateTo'] }}"></label>
+            <button class="align-middle btn btn-outline-primary btn-sm ml-3 btn-now-frame" type="submit">Сформировать отчёт</button>
+        </form>
+    </section>
+
+    {% if data['totalCount']['total'] > 0 %}
+        <section class="mb-3">
+            <p class="mb-1 font-weight-bold">Общее количество исследований: {{ data['totalCount']['total'] }}</p>
+        </section>
+    {% endif %}
+
+    <table class="table table-hover bb-2-black">
+        <tbody>
+
+        {% if data['totalCount']['total'] > 0 %}
+
+            <thead>
+                <tr>
+                    <th class="text-center">Исследование</th>
+                    <th class="text-center">Область исследования</th>
+                    <th class="text-center">Отделение</th>
+                    <th class="text-center">Исполнитель</th>
+                    <th class="text-center">Дата ОиВ</th>
+                    <th class="text-center">Пациент</th>
+                    <th class="text-center">Контингент</th>
+                    <th class="text-center">МКБ</th>
+                    <th class="text-center">Диагноз</th>
+                    <th class="text-center">Заключение</th>
+                </tr>
+            </thead>
+            {% for title in data['totalResult']|keys %}
+
+                <th class="title text-center" colspan="10">{{ title }}
+                    <span class="text-primary">количество: {{ data['totalResult'][title]['resCount']['total'] }}</span>
+                </th>
+
+                {% for subtitle in data['totalResult'][title]['area']|keys %}
+                    {% for type in data['totalResult'][title]['area'][subtitle]|keys %}
+                        {% for result in data['totalResult'][title]['area'][subtitle][type] %}
+                            <tr>
+                                <td>{{ result.blankName }}</td>
+                                <td>{{ result.resArea }}</td>
+                                <td>{{ result.department }} {{ result.ward }}</td>
+                                <td>{{ result.doctor }}</td>
+                                <td>{{ result.dateOut|date("d.m.y") }}</td>
+                                <td>{{ result.patient }}</td>
+                                <td>{{ result.contingentHosp ?? result.contingentAmb }}</td>
+                                <td>{{ result.mkb }}</td>
+                                <td>{{ result.ds }}</td>
+                                <td>{{ result.conclusion }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+
+            {% else %}
+                <tr class="table-warning">
+                    <th class="text-center" colspan="10">Нет данных: либо не выбран период и исследование, либо выбранный период не содержит данных</th>
+                </tr>
+            {% endif %}
+
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}
+

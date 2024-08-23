@@ -1,0 +1,61 @@
+{% extends 'oivReport/oiv_report_base.html.twig' %}
+
+{% block title %}Лабораторный журнал{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+
+        <p class="h5 text-center">Лабораторный журнал по исследованию: {{ data['labJournalName'] }}</p>
+
+        <section class="py-3 d-flex">
+            <form class="d-flex justify-content-start" action="{{ baseUrl }}/oiv_report/lab_journal/html" method="get">
+                <label class="align-middle">Период: с <input class="mx-1" name="from" type="date" value="{{ data['dateFrom'] }}"></label>
+                <label class="align-middle">по <input  name="to" type="date" value="{{ data['dateTo'] }}"></label>
+                <div class="EXCLONPRINT">
+                    <button class="align-middle btn btn-outline-primary btn-sm ml-3 btn-now-frame" type="submit">Сформировать отчёт</button>
+                </div>
+            </form>
+            <div class="EXCLONPRINT">
+                <button class="align-middle btn btn-outline-primary btn-sm ml-3 btn-now-frame" onClick="printDoc();">Напечатать</button>
+            </div>
+        </section>
+
+            {% if data['items']|length > 0 %}
+            <table class="table table-hover bb-2-black font-size-config lab-journal">
+
+                <thead>
+                <tr>
+                    <th class="text-center font-size-config">#</th>
+                    <th class="text-center font-size-config">ФИО пациента</th>
+                    <th class="text-center font-size-config">Отделение</th>
+                    <th class="text-center font-size-config">Дата выполнения</th>
+                    {% for title in data['parametersNames'] %}
+                        <th class="text-center font-size-config">{{ title }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for item in data['items'] %}
+                    <tr>
+                        <td class="text-center">{{ loop.index }}</td>
+                        <td>{{ item['meta']['patient'] }}</td>
+                        <td>{{ item['meta']['depart']  }}</td>
+                        <td class="text-center">{{ item['meta']['dateOut'] | date("d.m.y")  }}</td>
+                        {% for result in item['results'] %}
+                            <td class="text-center">{{ result }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+
+            {% else %}
+                <p class="h5 text-center text-danger">Выбранный период не содержит данных</p>
+            {% endif %}
+    </div>
+
+{% endblock %}
+

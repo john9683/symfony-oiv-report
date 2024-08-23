@@ -1,0 +1,103 @@
+{% extends 'oivReport/oiv_report_base.html.twig' %}
+
+{% block title %}ОиВ|исследования{% endblock %}
+
+{% block body %}
+
+
+<div class="container-fluid">
+
+    <p class="h5 text-center">Сводный отчёт по разделу исследований - {{ groupName }}</p>
+    <p class="h5 text-center">Исполнитель: {{ user }}</p>
+
+    <section class="py-3">
+
+        <form class="d-flex justify-content-end" action="{{ baseUrl }}/oiv_report/oiv/html" method="get">
+
+            <label class="align-middle mx-3">
+                <select name="doctor">
+                    <option value="all" selected>Выберите исполнителя</option>
+                    <option value="all">Все исполнители</option>
+                    {% for doctor in doctorArray %}
+                        <option value="{{ doctor['ID_USER'] }}">{{ doctor['DOCTOR'] }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="align-middle">Период: с <input class="mx-1" name="from" type="date" value="{{ data['dateFrom'] }}"></label>
+            <label class="align-middle">по <input  name="to" type="date" value="{{ data['dateTo'] }}"></label>
+
+            <button class="align-middle btn btn-outline-primary btn-sm ml-3 btn-now-frame" type="submit">Сформировать отчёт</button>
+
+        </form>
+    </section>
+
+    <table class="table table-hover bb-2-black">
+
+    {% if data['totalCount']['total'] > 0 %}
+
+        <thead>
+        <tr>
+            <th class="text-center" scope="col">Наименование исследования</th>
+            <th class="text-center" scope="col">Всего</th>
+            <th class="text-center" scope="col">Амбулаторно</th>
+            <th class="text-center" scope="col">Дневной стационар</th>
+            <th class="text-center" scope="col">Стационар</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr class="bb-2-black">
+            <td class="font-weight-bold">{{ groupName }} - всего</td>
+            <td class="text-center font-weight-bold">{{ data['totalCount']['total'] }}</td>
+            <td class="text-center font-weight-bold">{{ data['totalCount']['amb'] }}</td>
+            <td class="text-center font-weight-bold">{{ data['totalCount']['day'] }}</td>
+            <td class="text-center font-weight-bold">{{ data['totalCount']['hosp'] }}</td>
+        </tr>
+
+        {% for title in data['totalResult']|keys %}
+            <thead>
+            <tr class="title">
+                <th>{{ title }}</th>
+                <td class="text-center font-weight-bold">
+                    {{ data['totalResult'][title]['resCount']['amb']
+                    + data['totalResult'][title]['resCount']['day']
+                    +data['totalResult'][title]['resCount']['hosp'] }}
+                </td>
+                <td class="text-center">
+                    {{ data['totalResult'][title]['resCount']['amb'] ?? 0 }}
+                </td>
+                <td class="text-center">{{ data['totalResult'][title]['resCount']['day'] ?? 0 }}</td>
+                <td class="text-center">{{ data['totalResult'][title]['resCount']['hosp'] ?? 0 }}</td>
+            </tr>
+            </thead>
+
+            {% for subtitle in data['totalResult'][title]['area']|keys %}
+                <tr>
+                    <td>{{ subtitle }}</td>
+                    <td class="text-center font-weight-bold">
+                        {{ data['totalResult'][title]['area'][subtitle]['amb']|length
+                        + data['totalResult'][title]['area'][subtitle]['day']|length
+                        + data['totalResult'][title]['area'][subtitle]['hosp']|length}}
+                    </td>
+                    <td class="text-center">{{ data['totalResult'][title]['area'][subtitle]['amb']|length }}</td>
+                    <td class="text-center">{{ data['totalResult'][title]['area'][subtitle]['day']|length }}</td>
+                    <td class="text-center">{{ data['totalResult'][title]['area'][subtitle]['hosp']|length }}</td>
+                </tr>
+            {% endfor %}
+
+        {% endfor %}
+
+        {% else %}
+            <tr class="table-warning">
+                <th class="text-center" colspan="5">Нет данных: либо не выбран период, либо выбранный период не содержит данных</th>
+            </tr>
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

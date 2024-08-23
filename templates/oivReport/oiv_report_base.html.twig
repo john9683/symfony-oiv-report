@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="{{ asset('css/roboto.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/common.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/bootstrap-grid.css') }}" />
+    <script language="JavaScript" src="{{ asset('js/printDoc.js') }}"></script>
+
+    <style>
+        @page { size: landscape; }
+        body {background-color: #E8F0F0;}
+        input, select {border: solid 1px #E8F0F0; height: 31px; background-color: #E8F0F0;}
+        select {border: solid 1px black; border-radius: 3px;}
+        input:hover, select:hover {border: solid 1px rgb(0, 123, 255); border-radius: 3px;}
+        th {font-size: 10pt;}
+        .title{background-color: rgba(0,0,0,.15) !important; font-size: 12pt;}
+        .bt-black {border-top: solid 1px black !important;}
+        .bb-2-black {border-bottom: double 3px black !important;}
+        label {margin-bottom: 0;}
+        .btn-now-frame {border-color: transparent;}
+        .btn-now-frame:hover {border-color: rgb(0, 123, 255); background-color: transparent; color: rgb(0, 123, 255);}
+        .p-non {padding: 0 !important;}
+        .eye-wrap {width: 100%; height: 100%; padding: 12px 20px; margin: 0 !important; transition: transform .3s ease-in-out; transform: scale(1);}
+        .eye {transition: transform .3s ease-in-out; transform: scale(1);}
+        .eye-wrap:hover .eye {transform: scale(1.5);}
+        .eye-wrap:active .eye {fill: #dc3545;}
+        table th, table td {border-top: none !important; border-right: none !important; border-left: none !important;}
+        table {border-right: none !important; border-left: none !important;}
+        .table-hover tbody tr:hover {background-color: rgba(0,0,0,.15) !important;}
+        .none {display: none;}
+        .font-size-config {font-size: 10pt !important;}
+        .lab-journal th, .lab-journal td {padding: 0.5rem !important;}
+    </style>
+
+</head>
+
+<body>
+
+    {% block body %}{% endblock %}
+
+    <div class="d-flex justify-content-end mr-5 mb-3">
+        <div class="EXCLONPRINT">
+            <button id="up" class="align-middle btn btn-primary btn-sm ml-3 btn-now-frame none">Вверх</button>
+        </div>
+    </div>
+
+</body>
+
+<script>
+    const $btnUp = document.getElementById("up");
+
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset < 300) { $btnUp.classList.add("none") }
+        if (window.pageYOffset >= 300) { $btnUp.classList.remove("none") }
+    }, { passive: true });
+
+    $btnUp.addEventListener('click', () => window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    }));
+
+</script>
+
+</html>
